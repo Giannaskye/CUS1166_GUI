@@ -1,4 +1,4 @@
-public class Owner extends user{
+public class Owner extends User{
 	
 	private String vehicleID;
 	private String vehicleModel;
@@ -16,7 +16,7 @@ public class Owner extends user{
 	}
 	@Override
 	public String fileText() {
-		return "Owner ID: " + ID + " | Timestamp: " + time " | Vehicle ID: " + vehicleID + " | Vehicle model: " + vehicleModel + " | Vehicle make: " + vehicleMake +
+		return "Owner ID: " + ID + " | Timestamp: " + time + "| Vehicle ID" + vehicleID +  "| Vehicle model: " + vehicleModel + " | Vehicle make: " + vehicleMake +
 				" | Vehicle year: " + vehicleYear + " | Estimated residency time: " + residencyTime;
 	}
 }

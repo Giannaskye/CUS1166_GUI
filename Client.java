@@ -1,6 +1,6 @@
 import java.time.LocalDateTime;
 
-public class Client extends user {
+public class Client extends User {
 
     private int jobDurationMinutes;
     private LocalDateTime jobDeadline;

@@ -1,10 +1,10 @@
 import java.time.LocalDateTime;
 
-public abstract class user {
+public abstract class User {
 	protected String ID;
 	protected LocalDateTime time;
 
-	public user(String ID) {
+	public User(String ID) {
 		this.ID = ID;
 		this.time = LocalDateTime.now();
 	}
