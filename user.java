@@ -18,7 +18,7 @@ public abstract class user {
 	public LocalDateTime getTime() {
 		return time;
 	}
-
+	//Converts user objects to strings within text file
 	public abstract String fileText();
 
 }
