@@ -29,12 +29,12 @@ public VehicleCloudFrame (){
 private static void setupFrame(){
     //start code here
 	JFrame frame = new JFrame();
-	 frame.setSize(400,500);
+	 frame.setSize(500,600);
 	 frame.setTitle("Vehicular Cloud Real Time System");
 	 frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
     frame.getContentPane().setBackground(java.awt.Color.PINK);
     frame.setLocationRelativeTo(null); 
-    frame.setVisible(true);
+    
 }
 //TO:DO - HAWA - panels, buttons, textfields 
 private static void createComponents(){
