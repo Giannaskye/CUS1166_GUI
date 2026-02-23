@@ -1,242 +1,249 @@
-import javax.swing.*;           
-import java.awt.FlowLayout;      
-import java.awt.GridLayout;     
-import java.awt.CardLayout;      
-import java.awt.BorderLayout;    
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
+import javax.swing.*;
+import java.awt.*;
 import java.time.LocalDateTime;
-public class VehicleCloudFrame extends JFrame{
+import java.time.format.DateTimeFormatter;
+import java.time.format.DateTimeParseException;
 
+public class VehicleCloudFrame extends JFrame {
 
-private static JFrame frame;
-private static JButton ownerHomeButton;
-private static JButton clientHomeButton;
-private static JButton enterButton;
-private static JButton clearButton;
-private static JRadioButton ownerButton;
-private static JRadioButton clientButton;
-private static JTextField idField;
-private static JPanel cards;
+    // ── Shanti: frame-level layout reference
+    private CardLayout cardLayout;
+    private JPanel cards;
 
-public VehicleCloudFrame (){
-    
-    setupFrame();        // TO:DO - shanti
-    createComponents();  // TO:DO - hawa
-    attachListeners();   // TO:DO - gianna
+    // ── Hawa: radio buttons on home screen
+    private JRadioButton ownerButton;
+    private JRadioButton clientButton;
 
-    frame.setVisible(true);
-}
+    // ── Hawa: Owner panel fields (declared at class level so listeners can read them)
+    private JTextField ownerIDField;
+    private JTextField vehicleIDField;
+    private JTextField vehicleModelField;
+    private JTextField vehicleMakeField;
+    private JTextField vehicleYearField;
+    private JTextField arrivalTimeField;
+    private JTextField departureTimeField;
 
-//TO:DO - SHANTI - frame + design 
-private static void setupFrame(){
-    //start code here
-	JFrame frame = new JFrame();
-	 frame.setSize(500,600);
-	 frame.setTitle("Vehicular Cloud Real Time System");
-	 frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-    frame.getContentPane().setBackground(java.awt.Color.PINK);
-    frame.setLocationRelativeTo(null); 
-    
-}
+    // ── Hawa: Client panel fields
+    private JTextField clientIDField;
+    private JTextField jobDurationField;
+    private JTextField jobDeadlineField;
 
+    // ── Hawa: submit buttons (declared at class level so listeners can reference them)
+    private JButton ownerSubmitButton;
+    private JButton clientSubmitButton;
+    private JButton ownerHomeButton;
+    private JButton clientHomeButton;
 
-
-
-//TO:DO - HAWA - panels, buttons, textfields 
-private static void createComponents(){
-
-// Creating the titile section 
-JLabel titleLabel = new JLabel("Vehicular Cloud Console", JLabel.CENTER); // want to center the title in the center of the frame
-frame.add(titleLabel, BorderLayout.NORTH); // you want to add the title to frame and put the title at the top of the frame 
-
-// Main Panel for the three panels  
-cards = new JPanel(new CardLayout());
-
- // --- Home Panel ---
-    JPanel homePanel = new JPanel();
-    homePanel.setLayout(null);  // not using any 
-
-    JLabel questionLabel = new JLabel("What type of user are you?");
-    questionLabel.setBounds(120, 20, 200, 30);
-    homePanel.add(questionLabel);
- 
-    // Owner/Client buttons
-    ownerButton = new JRadioButton("Owner");
-    ownerButton.setBounds(100, 70, 100, 30);
-    clientButton = new JRadioButton("Client");
-    clientButton.setBounds(220, 70, 100, 30);
-
-    // Group them so only one can be selected
-    ButtonGroup group = new ButtonGroup();
-    group.add(ownerButton);
-    group.add(clientButton);
-
-    // adding owner and client button to the home panel 
-    homePanel.add(ownerButton);
-    homePanel.add(clientButton);
-
-
- // --Owner Panel---
-     JPanel ownerPanel = new JPanel(new GridLayout(5, 1, 0, 10));
-
-     // Title 
-    
-     JLabel ownerTitle = new JLabel("Owner");
-     ownerPanel.add(ownerTitle);
-
-     // row 1 
-    JPanel row1 = new JPanel(new FlowLayout(FlowLayout.LEFT));
-    row1.add(new JLabel("Owner ID:"));
-    row1.add(new JTextField(15));
-    row1.add(new JButton("Enter"));
-    ownerPanel.add(row1);
-
-    //row 2
-    JPanel row2 = new JPanel(new FlowLayout(FlowLayout.LEFT));
-    row2.add(new JLabel("Vehicle Info:"));
-    row2.add(new JTextField(15));
-    row2.add(new JButton("Enter"));
-    ownerPanel.add(row2);
-
-    //row 3 
-
-    JPanel row3 = new JPanel(new FlowLayout(FlowLayout.LEFT));
-    row3.add(new JLabel("Approx. Residency Time:"));
-    row3.add(new JTextField(15));
-    row3.add(new JButton("Enter"));
-    ownerPanel.add(row3);
-
-
-    // back home button from owner 
-    JPanel ownerHome= new JPanel(new FlowLayout(FlowLayout.LEFT));
-    JButton ownerHomeButton = new JButton("Home");
-    ownerHome.add(ownerHomeButton);
-    ownerPanel.add(ownerHome);
-
-
-
-// --Client Panel--
-     JPanel clientPanel = new JPanel(new GridLayout(5, 1, 0, 10));
-     
-     
-     // Titile 
-     JLabel clientTitle = new JLabel("Client");
-     clientPanel.add(clientTitle);
-
-     //row 1 (Client ID): 
-    JPanel clientID = new JPanel(new FlowLayout(FlowLayout.LEFT));
-    clientID.add(new JLabel("Client ID:"));
-    clientID.add(new JTextField(15));
-    clientID.add(new JButton("Enter"));
-    clientPanel.add(clientID);
-
-    //row 2( Appromximate job Duration)
-    JPanel Approximatejobduration = new JPanel(new FlowLayout(FlowLayout.LEFT));
-    Approximatejobduration.add(new JLabel("Approximate job duration:"));
-    Approximatejobduration.add(new JTextField(15));
-    Approximatejobduration.add(new JButton("Enter"));
-    clientPanel.add(Approximatejobduration);
-
-    // row 3(Job deadline)
-    JPanel jobDeadline = new JPanel(new FlowLayout(FlowLayout.LEFT));
-    jobDeadline.add(new JLabel("Job Deadline:"));
-    jobDeadline.add(new JTextField(15));
-    jobDeadline.add(new JButton("Enter"));
-    clientPanel.add(jobDeadline);
- 
-
-    // home button from client 
-    JPanel clientHome= new JPanel(new FlowLayout(FlowLayout.LEFT));
-    JButton clientHomeButton = new JButton("Home");
-    clientHome.add(clientHomeButton);
-    clientPanel.add(clientHome);
-
-
-    
-cards.add(homePanel, "Home");
-cards.add(ownerPanel, "Owner");
-cards.add(clientPanel, "Client");
-frame.add(cards, BorderLayout.CENTER); // Add the CardLayout container to the frame
-
-
-
-
-
-
-
-}
-
-
-
-
-//TO:DO- GIANNA - action listenrs
-    private void attachListeners(){
-    //home screen buttons 
-    clientButton.addActionListener(e-> cardLayout.show(cards, "Client"));
-    ownerButton.addActionListener(e-> cardLayout.show(cards,"Owner"));
-    //owner panel buttons 
-    ownerHomeButton.addActionListener(e-> goHome());
-    ownerSubmitButton.addActionListener(e-> handleOwnerSubmit());
-    // client panel buttons 
-    clientHomeButton.addActionListener(e-> goHome());
-    clientSubmitButton.addActionListener(e->  handleClientSubmit());
-
-}
-private void handleClear(){
-    idField.setText("");
-    modelField.setText("");
-    yearField.setText("");
-    restTimeField.setText("");
-    durationField.setText("");
-    deadlineField.setText("");
-    durationField.setText("");
-    
-}
-//owner button clicked
-private void handleOwnerSubmit(){
-        try{
-            String vehicleID = idField.getText();
-	        String vehicleModel = modelField.getText();
-	        String vehicleMake = makeField.getText();
-	        int vehicleYear = Integer.parseInt(yearField.getText());
-	        String residencyTime = resTimeField.getText();
-			Owner owner = new Owner(vehicleID,vehicleMake,vehicleModel,vehicleYear,residencyTime);
-        JOptionPane.showMessageDialog(this, "Owner Registered: " + vehicleID);
+    public VehicleCloudFrame() {
+        setupFrame();       // Shanti
+        createComponents(); // Hawa
+        attachListeners();  // Gianna
+        setVisible(true);
     }
-    catch (NumberFormatException e ){
-        JOptionPane.showMessageDialog(this,
-        "Please enter valid numeric values.");
-    
-    } catch(Exception e ){
-        JOptionPane.showMessageDialog(this, "Invalid input check fileds");
+
+    // ── Shanti: frame setup
+    // FIX: was re-declaring 'frame' as a local variable, shadowing the class field
+    private void setupFrame() {
+        setSize(550, 520);
+        setTitle("Vehicular Cloud Real Time System");
+        setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+        getContentPane().setBackground(new Color(255, 182, 193));
+        setLocationRelativeTo(null);
+        setLayout(new BorderLayout());
     }
-}
- //client button clicked 
-private void handleClientSubmit(){ 
-    try{
-        String clientId = idField.getText();
-        int jobDurationMinutes = Integer.parseInt(durationField.getText());
-        LocalDateTime jobDeadline = LocalDateTime.parse(deadlineField.getText());
 
-        Client client = new Client(clientId, jobDurationMinutes, jobDeadline);
-        JOptionPane.showMessageDialog(this,"Client Registered: "
-        + clientId);
-    
-    }catch (NumberFormatException e ){
-    JOptionPane.showMessageDialog(this,
-    "Job duration must be a vaild numebr ");
+    // ── Hawa: panels, buttons, text fields
+    // FIX: all JTextFields now stored as named instance variables so listeners can read them
+    // FIX: submit/home buttons declared at class level instead of locally
+    private void createComponents() {
 
-} catch(Exception e ){
-    JOptionPane.showMessageDialog(this, "Invalid deadline format.");
-}
-}
+        // Title
+        JLabel titleLabel = new JLabel("Vehicular Cloud Console", JLabel.CENTER);
+        titleLabel.setFont(new Font("Arial", Font.BOLD, 18));
+        add(titleLabel, BorderLayout.NORTH);
 
-private void goHome(){
-    handleClear();
-    cardLayout.show(cards, "Home");
+        cardLayout = new CardLayout();
+        cards = new JPanel(cardLayout);
 
-}
+        // Home Panel 
+        JPanel homePanel = new JPanel(null);
+        homePanel.setBackground(new Color(255, 220, 230));
 
-}
+        JLabel questionLabel = new JLabel("What type of user are you?");
+        questionLabel.setBounds(150, 60, 250, 30);
+        homePanel.add(questionLabel);
+
+        ownerButton = new JRadioButton("Owner");
+        ownerButton.setBounds(150, 110, 100, 30);
+        ownerButton.setBackground(new Color(255, 220, 230));
+
+        clientButton = new JRadioButton("Client");
+        clientButton.setBounds(270, 110, 100, 30);
+        clientButton.setBackground(new Color(255, 220, 230));
+
+        ButtonGroup group = new ButtonGroup();
+        group.add(ownerButton);
+        group.add(clientButton);
+
+        homePanel.add(ownerButton);
+        homePanel.add(clientButton);
+
+        // Owner Panel 
+        JPanel ownerPanel = new JPanel(new GridLayout(9, 1, 0, 5));
+        ownerPanel.setBorder(BorderFactory.createEmptyBorder(10, 10, 10, 10));
+
+        ownerPanel.add(makeLabel("Owner Registration"));
+
+        ownerPanel.add(makeRow("Owner ID:",        ownerIDField       = new JTextField(15)));
+        ownerPanel.add(makeRow("Vehicle ID:",       vehicleIDField     = new JTextField(15)));
+        ownerPanel.add(makeRow("Vehicle Model:",    vehicleModelField  = new JTextField(15)));
+        ownerPanel.add(makeRow("Vehicle Make:",     vehicleMakeField   = new JTextField(15)));
+        ownerPanel.add(makeRow("Vehicle Year:",     vehicleYearField   = new JTextField(15)));
+        ownerPanel.add(makeRow("Arrival Time:",     arrivalTimeField   = new JTextField(15)));
+        ownerPanel.add(makeRow("Departure Time:",   departureTimeField = new JTextField(15)));
+
+        JPanel ownerButtons = new JPanel(new FlowLayout(FlowLayout.LEFT));
+        ownerSubmitButton = new JButton("Submit");
+        ownerHomeButton   = new JButton("Home");
+        ownerButtons.add(ownerSubmitButton);
+        ownerButtons.add(ownerHomeButton);
+        ownerPanel.add(ownerButtons);
+
+        // Client Panel
+        JPanel clientPanel = new JPanel(new GridLayout(5, 1, 0, 5));
+        clientPanel.setBorder(BorderFactory.createEmptyBorder(10, 10, 10, 10));
+
+        clientPanel.add(makeLabel("Client Registration"));
+
+        clientPanel.add(makeRow("Client ID:",             clientIDField   = new JTextField(15)));
+        clientPanel.add(makeRow("Job Duration (min):",    jobDurationField = new JTextField(15)));
+        clientPanel.add(makeRow("Job Deadline\n(yyyy-MM-ddTHH:mm):", jobDeadlineField = new JTextField(15)));
+
+        JPanel clientButtons = new JPanel(new FlowLayout(FlowLayout.LEFT));
+        clientSubmitButton = new JButton("Submit");
+        clientHomeButton   = new JButton("Home");
+        clientButtons.add(clientSubmitButton);
+        clientButtons.add(clientHomeButton);
+        clientPanel.add(clientButtons);
+
+        cards.add(homePanel,   "Home");
+        cards.add(ownerPanel,  "Owner");
+        cards.add(clientPanel, "Client");
+
+        add(cards, BorderLayout.CENTER);
+    }
+
+    // Hawa: helper to build a labeled row
+    private JPanel makeRow(String labelText, JTextField field) {
+        JPanel row = new JPanel(new FlowLayout(FlowLayout.LEFT));
+        JLabel label = new JLabel(labelText);
+        label.setPreferredSize(new Dimension(180, 25));
+        row.add(label);
+        row.add(field);
+        return row;
+    }
+
+    private JLabel makeLabel(String text) {
+        JLabel label = new JLabel(text, JLabel.CENTER);
+        label.setFont(new Font("Arial", Font.BOLD, 14));
+        return label;
+    }
+
+    // Gianna: action listeners
+    // FIX: cardLayout and all buttons now properly in scope as instance variables
+    private void attachListeners() {
+        ownerButton.addActionListener(e -> cardLayout.show(cards, "Owner"));
+        clientButton.addActionListener(e -> cardLayout.show(cards, "Client"));
+
+        ownerHomeButton.addActionListener(e -> goHome());
+        clientHomeButton.addActionListener(e -> goHome());
+
+        ownerSubmitButton.addActionListener(e -> handleOwnerSubmit());
+        clientSubmitButton.addActionListener(e -> handleClientSubmit());
+    }
+
+    // Gianna: clear all fields
+    private void handleClear() {
+        ownerIDField.setText("");
+        vehicleIDField.setText("");
+        vehicleModelField.setText("");
+        vehicleMakeField.setText("");
+        vehicleYearField.setText("");
+        arrivalTimeField.setText("");
+        departureTimeField.setText("");
+        clientIDField.setText("");
+        jobDurationField.setText("");
+        jobDeadlineField.setText("");
+    }
+
+    // Gianna: owner submit handler
+    private void handleOwnerSubmit() {
+        try {
+            String ownerID       = ownerIDField.getText().trim();
+            String vehicleID     = vehicleIDField.getText().trim();
+            String vehicleModel  = vehicleModelField.getText().trim();
+            String vehicleMake   = vehicleMakeField.getText().trim();
+            int    vehicleYear   = Integer.parseInt(vehicleYearField.getText().trim());
+            String arrivalTime   = arrivalTimeField.getText().trim();
+            String departureTime = departureTimeField.getText().trim();
+
+            if (ownerID.isEmpty() || vehicleID.isEmpty()) {
+                JOptionPane.showMessageDialog(this, "Owner ID and Vehicle ID are required.");
+                return;
+            }
+
+            Owner owner = new Owner(ownerID, vehicleID, vehicleModel, vehicleMake,
+                                    vehicleYear, arrivalTime, departureTime);
+
+            FileManager.saveUser(owner); // -MEHMETS ADDITION: RECORD OWNER ENTRY DATA, NEEDED FOR DATA STORAGE
+
+            JOptionPane.showMessageDialog(this,
+                "Owner Registered Successfully!\nOwner ID: " + ownerID +
+                "\nData saved to vehicular_cloud_log.txt"); // CONFIRMS TO SAVE FILE
+
+        } catch (NumberFormatException e) {
+            JOptionPane.showMessageDialog(this, "Vehicle Year must be a valid number.");
+        } catch (Exception e) {
+            JOptionPane.showMessageDialog(this, "Invalid input. Please check all fields.");
+        }
+    }
+
+    // Gianna: client submit handler
+    private void handleClientSubmit() {
+        try {
+            String clientID          = clientIDField.getText().trim();
+            int    jobDurationMinutes = Integer.parseInt(jobDurationField.getText().trim());
+            LocalDateTime jobDeadline = LocalDateTime.parse(
+                jobDeadlineField.getText().trim(),
+                DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm")
+            );
+
+            if (clientID.isEmpty()) {
+                JOptionPane.showMessageDialog(this, "Client ID is required.");
+                return;
+            }
+
+            Client client = new Client(clientID, jobDurationMinutes, jobDeadline);
+
+            FileManager.saveUser(client); // MEHMET: SAME THING BUT FOR CLIENT
+
+            JOptionPane.showMessageDialog(this,
+                "Client Registered Successfully!\nClient ID: " + clientID +
+                "\nData saved to vehicular_cloud_log.txt"); // CLIENT CONFIRMS TO SAVE FILE
+
+        } catch (NumberFormatException e) {
+            JOptionPane.showMessageDialog(this, "Job duration must be a valid number.");
+        } catch (DateTimeParseException e) {
+            JOptionPane.showMessageDialog(this,
+                "Invalid deadline format. Please use: yyyy-MM-ddTHH:mm\nExample: 2025-04-01T14:30");
+        } catch (Exception e) {
+            JOptionPane.showMessageDialog(this, "Invalid input. Please check all fields.");
+        }
+    }
+
+    // Gianna: go back home
+    private void goHome() {
+        handleClear();
+        cardLayout.show(cards, "Home");
+    }
 }
