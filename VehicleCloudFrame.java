@@ -34,7 +34,7 @@ private static void setupFrame(){
 	 frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
     frame.getContentPane().setBackground(java.awt.Color.PINK);
     frame.setLocationRelativeTo(null); 
-    frame.setVisible(true);
+    
 }
 //TO:DO - HAWA - panels, buttons, textfields 
 private static void createComponents(){
