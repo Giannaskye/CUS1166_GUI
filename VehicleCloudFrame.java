@@ -5,6 +5,7 @@ import java.awt.CardLayout;
 import java.awt.BorderLayout;    
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.time.LocalDateTime;
 public class VehicleCloudFrame extends JFrame{
 
 
@@ -170,8 +171,72 @@ frame.add(cards, BorderLayout.CENTER); // Add the CardLayout container to the fr
 
 
 //TO:DO- GIANNA - action listenrs
-private static void attachListeners(){
-    //start code here 
+    private void attachListeners(){
+    //home screen buttons 
+    clientButton.addActionListener(e-> cardLayout.show(cards, "Client"));
+    ownerButton.addActionListener(e-> cardLayout.show(cards,"Owner"));
+    //owner panel buttons 
+    ownerHomeButton.addActionListener(e-> goHome());
+    ownerSubmitButton.addActionListener(e-> handleOwnerSubmit());
+    // client panel buttons 
+    clientHomeButton.addActionListener(e-> goHome());
+    clientSubmitButton.addActionListener(e->  handleClientSubmit());
+
+}
+private void handleClear(){
+    idField.setText("");
+    modelField.setText("");
+    yearField.setText("");
+    restTimeField.setText("");
+    durationField.setText("");
+    deadlineField.setText("");
+    durationField.setText("");
+    
+}
+//owner button clicked
+private void handleOwnerSubmit(){
+        try{
+            String vehicleID = idField.getText();
+	        String vehicleModel = modelField.getText();
+	        String vehicleMake = makeField.getText();
+	        int vehicleYear = Integer.parseInt(yearField.getText());
+	        String residencyTime = resTimeField.getText();
+			Owner owner = new Owner(vehicleID,vehicleMake,vehicleModel,vehicleYear,residencyTime);
+        JOptionPane.showMessageDialog(this, "Owner Registered: " + vehicleID);
+    }
+    catch (NumberFormatException e ){
+        JOptionPane.showMessageDialog(this,
+        "Please enter valid numeric values.");
+    
+    } catch(Exception e ){
+        JOptionPane.showMessageDialog(this, "Invalid input check fileds");
+    }
+}
+ //client button clicked 
+private void handleClientSubmit(){ 
+    try{
+        String clientId = idField.getText();
+        int jobDurationMinutes = Integer.parseInt(durationField.getText());
+        LocalDateTime jobDeadline = LocalDateTime.parse(deadlineField.getText());
+
+        Client client = new Client(clientId, jobDurationMinutes, jobDeadline);
+        JOptionPane.showMessageDialog(this,"Client Registered: "
+        + clientId);
+    
+    }catch (NumberFormatException e ){
+    JOptionPane.showMessageDialog(this,
+    "Job duration must be a vaild numebr ");
+
+} catch(Exception e ){
+    JOptionPane.showMessageDialog(this, "Invalid deadline format.");
+}
+}
+
+private void goHome(){
+    handleClear();
+    cardLayout.show(cards, "Home");
+
+}
 
 }
 }
