@@ -1,5 +1,3 @@
-import java.time.LocalDateTime;
-
 public class Job {
 
     private String jobID;
