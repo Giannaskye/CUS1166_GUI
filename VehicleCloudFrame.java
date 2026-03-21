@@ -1,8 +1,12 @@
 import javax.swing.*;
 import java.awt.*;
+import java.io.BufferedReader;
+import java.io.File;
+import java.io.FileReader;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.time.format.DateTimeParseException;
+import java.util.ArrayList;
 import java.util.Comparator;
 
 public class VehicleCloudFrame extends JFrame {
@@ -19,6 +23,12 @@ public class VehicleCloudFrame extends JFrame {
     private JRadioButton ownerButton;
     private JRadioButton clientButton;
 
+
+
+    //--Hawa: Start Button on Home page 
+    private JButton startButton;
+
+
     // ── Hawa: Owner panel fields (declared at class level so listeners can read them)
     private JTextField ownerIDField;
     private JTextField vehicleIDField;
@@ -33,11 +43,23 @@ public class VehicleCloudFrame extends JFrame {
     private JTextField jobDurationField;
     private JTextField jobDeadlineField;
 
+
+    //-- Hawa: Controller Panel Components
+    private JTextField controllerIdField;
+    private JButton controllerButton;
+    private JButton controllerHomeButton;
+    private JButton controllerClearButton;
+    private JButton computeCompletion;
+
     // ── Hawa: submit buttons (declared at class level so listeners can reference them)
     private JButton ownerSubmitButton;
     private JButton clientSubmitButton;
     private JButton ownerHomeButton;
     private JButton clientHomeButton;
+
+    // ── Hawa: Clear buttons
+     private JButton ownerClearButton;
+     private JButton clientClearButton;
 
     public VehicleCloudFrame() {
         setupFrame();       // Shanti
@@ -70,6 +92,29 @@ public class VehicleCloudFrame extends JFrame {
         cardLayout = new CardLayout();
         cards = new JPanel(cardLayout);
 
+    // ── NEW: Welcome Panel
+      JPanel welcomePanel = new JPanel(new BorderLayout());
+      welcomePanel.setBackground(new Color(255, 220, 230));
+
+      JLabel welcomeTitle = new JLabel("Welcome to VCRTS", JLabel.CENTER);
+      welcomeTitle.setFont(new Font("Arial", Font.BOLD, 20));
+
+      JTextArea description = new JTextArea(
+        "Vehicular Cloud Real-Time System (VCRTS)\n\n" +
+        "This system allows vehicle owners to share computing resources\n" +
+        "and clients to submit computational jobs.\n\n" +
+        "The controller assigns jobs efficiently based on timing\n" +
+        "and system availability."
+      );
+     description.setEditable(false);
+     description.setBackground(new Color(255, 220, 230));
+
+    startButton = new JButton("Start");
+
+   welcomePanel.add(welcomeTitle, BorderLayout.NORTH);
+   welcomePanel.add(description, BorderLayout.CENTER);
+   welcomePanel.add(startButton, BorderLayout.SOUTH);
+
         // Home Panel 
         JPanel homePanel = new JPanel(null);
         homePanel.setBackground(new Color(255, 220, 230));
@@ -86,12 +131,41 @@ public class VehicleCloudFrame extends JFrame {
         clientButton.setBounds(270, 110, 100, 30);
         clientButton.setBackground(new Color(255, 220, 230));
 
+        controllerButton = new JButton("Controller");
+        controllerButton.setBounds(200, 160, 120, 30);
+        homePanel.add(controllerButton);
+
         ButtonGroup group = new ButtonGroup();
         group.add(ownerButton);
         group.add(clientButton);
 
         homePanel.add(ownerButton);
         homePanel.add(clientButton);
+
+
+        // Controller Panel 
+        JPanel controllerPanel = new JPanel(new GridLayout(5, 1, 0, 5));
+        controllerPanel.setBorder(BorderFactory.createEmptyBorder(10, 10, 10, 10));
+
+        controllerPanel.add(makeLabel("Controller Panel"));
+        controllerPanel.add(makeRow("Controller ID:", controllerIdField = new JTextField(15)));
+
+        JPanel controllerButtons = new JPanel(new FlowLayout(FlowLayout.LEFT));
+
+        computeCompletion = new JButton("Compute Completion");
+        controllerHomeButton = new JButton("Home");
+        controllerClearButton = new JButton("Clear");
+
+      controllerButtons.add(computeCompletion);
+      controllerButtons.add(controllerClearButton);
+      controllerButtons.add(controllerHomeButton);
+
+      controllerPanel.add(controllerButtons);
+
+        // output
+        outputArea = new JTextArea(8, 30);
+        outputArea.setEditable(false);
+        controllerPanel.add(new JScrollPane(outputArea));
 
         // Owner Panel 
         JPanel ownerPanel = new JPanel(new GridLayout(9, 1, 0, 5));
@@ -104,15 +178,17 @@ public class VehicleCloudFrame extends JFrame {
         ownerPanel.add(makeRow("Vehicle Model:",    vehicleModelField  = new JTextField(15)));
         ownerPanel.add(makeRow("Vehicle Make:",     vehicleMakeField   = new JTextField(15)));
         ownerPanel.add(makeRow("Vehicle Year:",     vehicleYearField   = new JTextField(15)));
-        ownerPanel.add(makeRow("Arrival Time:",     arrivalTimeField   = new JTextField(15)));
-        ownerPanel.add(makeRow("Departure Time:",   departureTimeField = new JTextField(15)));
-
+        ownerPanel.add(makeRow("Arrival Time (min):", arrivalTimeField = new JTextField(15)));
+        ownerPanel.add(makeRow("Departure Time (min):", departureTimeField = new JTextField(15))); 
         JPanel ownerButtons = new JPanel(new FlowLayout(FlowLayout.LEFT));
         ownerSubmitButton = new JButton("Submit");
         ownerHomeButton   = new JButton("Home");
         ownerButtons.add(ownerSubmitButton);
         ownerButtons.add(ownerHomeButton);
         ownerPanel.add(ownerButtons);
+        // addded clear button
+        ownerClearButton = new JButton("Clear");
+        ownerButtons.add(ownerClearButton);
 
         // Client Panel
         JPanel clientPanel = new JPanel(new GridLayout(5, 1, 0, 5));
@@ -130,12 +206,24 @@ public class VehicleCloudFrame extends JFrame {
         clientButtons.add(clientSubmitButton);
         clientButtons.add(clientHomeButton);
         clientPanel.add(clientButtons);
+        
+
+        // added client clear buttons 
+        clientClearButton = new JButton("Clear");
+        clientButtons.add(clientClearButton);
 
         cards.add(homePanel,   "Home");
         cards.add(ownerPanel,  "Owner");
         cards.add(clientPanel, "Client");
+        cards.add(welcomePanel, "Welcome");
+        cards.add(controllerPanel, "Controller"); 
+
+
+
 
         add(cards, BorderLayout.CENTER);
+         // make sure the welcome page shows first
+        cardLayout.show(cards, "Welcome");  
     }
 
     // Hawa: helper to build a labeled row
@@ -160,6 +248,11 @@ public class VehicleCloudFrame extends JFrame {
         ownerButton.addActionListener(e -> cardLayout.show(cards, "Owner"));
         clientButton.addActionListener(e -> cardLayout.show(cards, "Client"));
         controllerButton.addActionListener(e -> cardLayout.show(cards, "Controller"));
+        // added start button action listner from welcome page and controller action listner from 
+        startButton.addActionListener(e -> cardLayout.show(cards, "Home"));
+        controllerButton.addActionListener(e -> cardLayout.show(cards, "Controller"));
+
+
         //home buttons
         controllerHomeButton.addActionListener(e-> goHome());
         ownerHomeButton.addActionListener(e -> goHome());
@@ -169,8 +262,8 @@ public class VehicleCloudFrame extends JFrame {
         clientSubmitButton.addActionListener(e -> handleClientSubmit());
         //clear buttons
         ownerClearButton.addActionListener(e -> handleClear());
-        ownerClearButton.addActionListener(e -> handleClear());
         controllerClearButton.addActionListener(e -> handleClear());
+        clientClearButton.addActionListener(e -> handleClear());
 
         computeCompletion.addActionListener(e -> handleComputation());
     }
