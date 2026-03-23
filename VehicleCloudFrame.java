@@ -13,7 +13,7 @@ import java.util.Comparator;
 
 public class VehicleCloudFrame extends JFrame {
 
-    //vc conttroller
+    //vc controller
     private final VCController vc = new VCController("VC-001");
     private JTextArea outputArea;
 
@@ -25,11 +25,8 @@ public class VehicleCloudFrame extends JFrame {
     private JRadioButton ownerButton;
     private JRadioButton clientButton;
 
-
-
-    //--Hawa: Start Button on Home page 
+    //--Hawa: Start Button on Home page
     private JButton startButton;
-
 
     // ── Hawa: Owner panel fields (declared at class level so listeners can read them)
     private JTextField ownerIDField;
@@ -45,7 +42,6 @@ public class VehicleCloudFrame extends JFrame {
     private JTextField jobDurationField;
     private JTextField jobDeadlineField;
 
-
     //-- Hawa: Controller Panel Components
     private JTextField controllerIdField;
     private JButton controllerButton;
@@ -60,8 +56,8 @@ public class VehicleCloudFrame extends JFrame {
     private JButton clientHomeButton;
 
     // ── Hawa: Clear buttons
-     private JButton ownerClearButton;
-     private JButton clientClearButton;
+    private JButton ownerClearButton;
+    private JButton clientClearButton;
 
     public VehicleCloudFrame() {
         setupFrame();       // Shanti
@@ -71,7 +67,6 @@ public class VehicleCloudFrame extends JFrame {
     }
 
     // ── Shanti: frame setup
-    // FIX: was re-declaring 'frame' as a local variable, shadowing the class field
     private void setupFrame() {
         setSize(550, 520);
         setTitle("Vehicular Cloud Real Time System");
@@ -82,8 +77,6 @@ public class VehicleCloudFrame extends JFrame {
     }
 
     // ── Hawa: panels, buttons, text fields
-    // FIX: all JTextFields now stored as named instance variables so listeners can read them
-    // FIX: submit/home buttons declared at class level instead of locally
     private void createComponents() {
 
         // Title
@@ -94,30 +87,30 @@ public class VehicleCloudFrame extends JFrame {
         cardLayout = new CardLayout();
         cards = new JPanel(cardLayout);
 
-    // ── NEW: Welcome Panel
-      JPanel welcomePanel = new JPanel(new BorderLayout());
-      welcomePanel.setBackground(new Color(255, 220, 230));
+        // ── NEW: Welcome Panel
+        JPanel welcomePanel = new JPanel(new BorderLayout());
+        welcomePanel.setBackground(new Color(255, 220, 230));
 
-      JLabel welcomeTitle = new JLabel("Welcome to VCRTS", JLabel.CENTER);
-      welcomeTitle.setFont(new Font("Arial", Font.BOLD, 20));
+        JLabel welcomeTitle = new JLabel("Welcome to VCRTS", JLabel.CENTER);
+        welcomeTitle.setFont(new Font("Arial", Font.BOLD, 20));
 
-      JTextArea description = new JTextArea(
-        "Vehicular Cloud Real-Time System (VCRTS)\n\n" +
-        "This system allows vehicle owners to share computing resources\n" +
-        "and clients to submit computational jobs.\n\n" +
-        "The controller assigns jobs efficiently based on timing\n" +
-        "and system availability."
-      );
-     description.setEditable(false);
-     description.setBackground(new Color(255, 220, 230));
+        JTextArea description = new JTextArea(
+            "Vehicular Cloud Real-Time System (VCRTS)\n\n" +
+            "This system allows vehicle owners to share computing resources\n" +
+            "and clients to submit computational jobs.\n\n" +
+            "The controller assigns jobs efficiently based on timing\n" +
+            "and system availability."
+        );
+        description.setEditable(false);
+        description.setBackground(new Color(255, 220, 230));
 
-    startButton = new JButton("Start");
+        startButton = new JButton("Start");
 
-   welcomePanel.add(welcomeTitle, BorderLayout.NORTH);
-   welcomePanel.add(description, BorderLayout.CENTER);
-   welcomePanel.add(startButton, BorderLayout.SOUTH);
+        welcomePanel.add(welcomeTitle, BorderLayout.NORTH);
+        welcomePanel.add(description, BorderLayout.CENTER);
+        welcomePanel.add(startButton, BorderLayout.SOUTH);
 
-        // Home Panel 
+        // Home Panel
         JPanel homePanel = new JPanel(null);
         homePanel.setBackground(new Color(255, 220, 230));
 
@@ -144,8 +137,7 @@ public class VehicleCloudFrame extends JFrame {
         homePanel.add(ownerButton);
         homePanel.add(clientButton);
 
-
-        // Controller Panel 
+        // Controller Panel
         JPanel controllerPanel = new JPanel(new GridLayout(5, 1, 0, 5));
         controllerPanel.setBorder(BorderFactory.createEmptyBorder(10, 10, 10, 10));
 
@@ -158,39 +150,39 @@ public class VehicleCloudFrame extends JFrame {
         controllerHomeButton = new JButton("Home");
         controllerClearButton = new JButton("Clear");
 
-      controllerButtons.add(computeCompletion);
-      controllerButtons.add(controllerClearButton);
-      controllerButtons.add(controllerHomeButton);
+        controllerButtons.add(computeCompletion);
+        controllerButtons.add(controllerClearButton);
+        controllerButtons.add(controllerHomeButton);
 
-      controllerPanel.add(controllerButtons);
+        controllerPanel.add(controllerButtons);
 
         // output
         outputArea = new JTextArea(8, 30);
         outputArea.setEditable(false);
         controllerPanel.add(new JScrollPane(outputArea));
 
-        // Owner Panel 
+        // Owner Panel
         JPanel ownerPanel = new JPanel(new GridLayout(9, 1, 0, 5));
         ownerPanel.setBorder(BorderFactory.createEmptyBorder(10, 10, 10, 10));
 
         ownerPanel.add(makeLabel("Owner Registration"));
 
-        ownerPanel.add(makeRow("Owner ID:",        ownerIDField       = new JTextField(15)));
-        ownerPanel.add(makeRow("Vehicle ID:",       vehicleIDField     = new JTextField(15)));
-        ownerPanel.add(makeRow("Vehicle Model:",    vehicleModelField  = new JTextField(15)));
-        ownerPanel.add(makeRow("Vehicle Make:",     vehicleMakeField   = new JTextField(15)));
-        ownerPanel.add(makeRow("Vehicle Year:",     vehicleYearField   = new JTextField(15)));
-        ownerPanel.add(makeRow("Arrival Time (min):", arrivalTimeField = new JTextField(15)));
-        ownerPanel.add(makeRow("Departure Time (min):", departureTimeField = new JTextField(15))); 
+        ownerPanel.add(makeRow("Owner ID:",           ownerIDField       = new JTextField(15)));
+        ownerPanel.add(makeRow("Vehicle ID:",          vehicleIDField     = new JTextField(15)));
+        ownerPanel.add(makeRow("Vehicle Model:",       vehicleModelField  = new JTextField(15)));
+        ownerPanel.add(makeRow("Vehicle Make:",        vehicleMakeField   = new JTextField(15)));
+        ownerPanel.add(makeRow("Vehicle Year:",        vehicleYearField   = new JTextField(15)));
+        ownerPanel.add(makeRow("Arrival Time (min):",  arrivalTimeField   = new JTextField(15)));
+        ownerPanel.add(makeRow("Departure Time (min):", departureTimeField = new JTextField(15)));
+
         JPanel ownerButtons = new JPanel(new FlowLayout(FlowLayout.LEFT));
         ownerSubmitButton = new JButton("Submit");
         ownerHomeButton   = new JButton("Home");
+        ownerClearButton  = new JButton("Clear");
         ownerButtons.add(ownerSubmitButton);
+        ownerButtons.add(ownerClearButton);
         ownerButtons.add(ownerHomeButton);
         ownerPanel.add(ownerButtons);
-        // addded clear button
-        ownerClearButton = new JButton("Clear");
-        ownerButtons.add(ownerClearButton);
 
         // Client Panel
         JPanel clientPanel = new JPanel(new GridLayout(5, 1, 0, 5));
@@ -198,34 +190,28 @@ public class VehicleCloudFrame extends JFrame {
 
         clientPanel.add(makeLabel("Client Registration"));
 
-        clientPanel.add(makeRow("Client ID:",             clientIDField   = new JTextField(15)));
-        clientPanel.add(makeRow("Job Duration (min):",    jobDurationField = new JTextField(15)));
-        clientPanel.add(makeRow("Job Deadline\n(yyyy-MM-ddTHH:mm):", jobDeadlineField = new JTextField(15)));
+        clientPanel.add(makeRow("Client ID:",                      clientIDField    = new JTextField(15)));
+        clientPanel.add(makeRow("Job Duration (min):",             jobDurationField = new JTextField(15)));
+        clientPanel.add(makeRow("Job Deadline (yyyy-MM-ddTHH:mm):", jobDeadlineField = new JTextField(15)));
 
         JPanel clientButtons = new JPanel(new FlowLayout(FlowLayout.LEFT));
         clientSubmitButton = new JButton("Submit");
         clientHomeButton   = new JButton("Home");
+        clientClearButton  = new JButton("Clear");
         clientButtons.add(clientSubmitButton);
+        clientButtons.add(clientClearButton);
         clientButtons.add(clientHomeButton);
         clientPanel.add(clientButtons);
-        
 
-        // added client clear buttons 
-        clientClearButton = new JButton("Clear");
-        clientButtons.add(clientClearButton);
-
-        cards.add(homePanel,   "Home");
-        cards.add(ownerPanel,  "Owner");
-        cards.add(clientPanel, "Client");
-        cards.add(welcomePanel, "Welcome");
-        cards.add(controllerPanel, "Controller"); 
-
-
-
+        cards.add(homePanel,       "Home");
+        cards.add(ownerPanel,      "Owner");
+        cards.add(clientPanel,     "Client");
+        cards.add(welcomePanel,    "Welcome");
+        cards.add(controllerPanel, "Controller");
 
         add(cards, BorderLayout.CENTER);
-         // make sure the welcome page shows first
-        cardLayout.show(cards, "Welcome");  
+        // make sure the welcome page shows first
+        cardLayout.show(cards, "Welcome");
     }
 
     // Hawa: helper to build a labeled row
@@ -245,29 +231,38 @@ public class VehicleCloudFrame extends JFrame {
     }
 
     // Gianna: action listeners
-    // FIX: cardLayout and all buttons now properly in scope as instance variables
     private void attachListeners() {
         ownerButton.addActionListener(e -> cardLayout.show(cards, "Owner"));
         clientButton.addActionListener(e -> cardLayout.show(cards, "Client"));
         controllerButton.addActionListener(e -> cardLayout.show(cards, "Controller"));
-        // added start button action listner from welcome page and controller action listner from 
         startButton.addActionListener(e -> cardLayout.show(cards, "Home"));
-        controllerButton.addActionListener(e -> cardLayout.show(cards, "Controller"));
 
-
-        //home buttons
-        controllerHomeButton.addActionListener(e-> goHome());
+        // home buttons
+        controllerHomeButton.addActionListener(e -> goHome());
         ownerHomeButton.addActionListener(e -> goHome());
         clientHomeButton.addActionListener(e -> goHome());
-       //submit buttons
+
+        // submit buttons
         ownerSubmitButton.addActionListener(e -> handleOwnerSubmit());
         clientSubmitButton.addActionListener(e -> handleClientSubmit());
-        //clear buttons
+
+        // clear buttons
         ownerClearButton.addActionListener(e -> handleClear());
         controllerClearButton.addActionListener(e -> handleClear());
         clientClearButton.addActionListener(e -> handleClear());
 
-        computeCompletion.addActionListener(e -> handleComputation(//file));
+        // FIX: open a JFileChooser so the user can select the log file,
+        // then pass the chosen File to handleComputation.
+        // Previously this was: handleComputation(//file) — a syntax error
+        // with a dangling comment instead of an actual argument.
+        computeCompletion.addActionListener(e -> {
+            JFileChooser chooser = new JFileChooser();
+            chooser.setDialogTitle("Select the vehicular cloud log file");
+            int result = chooser.showOpenDialog(this);
+            if (result == JFileChooser.APPROVE_OPTION) {
+                handleComputation(chooser.getSelectedFile());
+            }
+        });
     }
 
     // Gianna: clear all fields
@@ -284,10 +279,6 @@ public class VehicleCloudFrame extends JFrame {
         jobDurationField.setText("");
         jobDeadlineField.setText("");
     }
-
-
-
-  
 
     // Gianna: owner submit handler
     private void handleOwnerSubmit() {
@@ -308,11 +299,11 @@ public class VehicleCloudFrame extends JFrame {
             Owner owner = new Owner(ownerID, vehicleID, vehicleModel, vehicleMake,
                                     vehicleYear, arrivalTime, departureTime);
 
-            FileManager.saveUser(owner); // -MEHMETS ADDITION: RECORD OWNER ENTRY DATA, NEEDED FOR DATA STORAGE
+            FileManager.saveUser(owner);
 
             JOptionPane.showMessageDialog(this,
                 "Owner Registered Successfully!\nOwner ID: " + ownerID +
-                "\nData saved to vehicular_cloud_log.txt"); // CONFIRMS TO SAVE FILE
+                "\nData saved to vehicular_cloud_log.txt");
 
         } catch (NumberFormatException e) {
             JOptionPane.showMessageDialog(this, "Vehicle Year must be a valid number.");
@@ -324,7 +315,7 @@ public class VehicleCloudFrame extends JFrame {
     // Gianna: client submit handler
     private void handleClientSubmit() {
         try {
-            String clientID          = clientIDField.getText().trim();
+            String clientID           = clientIDField.getText().trim();
             int    jobDurationMinutes = Integer.parseInt(jobDurationField.getText().trim());
             LocalDateTime jobDeadline = LocalDateTime.parse(
                 jobDeadlineField.getText().trim(),
@@ -338,11 +329,11 @@ public class VehicleCloudFrame extends JFrame {
 
             Client client = new Client(clientID, jobDurationMinutes, jobDeadline);
 
-            FileManager.saveUser(client); // MEHMET: SAME THING BUT FOR CLIENT
+            FileManager.saveUser(client);
 
             JOptionPane.showMessageDialog(this,
                 "Client Registered Successfully!\nClient ID: " + clientID +
-                "\nData saved to vehicular_cloud_log.txt"); // CLIENT CONFIRMS TO SAVE FILE
+                "\nData saved to vehicular_cloud_log.txt");
 
         } catch (NumberFormatException e) {
             JOptionPane.showMessageDialog(this, "Job duration must be a valid number.");
@@ -351,57 +342,60 @@ public class VehicleCloudFrame extends JFrame {
                 "Invalid deadline format. Please use: yyyy-MM-ddTHH:mm\nExample: 2025-04-01T14:30");
         } catch (Exception e) {
             JOptionPane.showMessageDialog(this, "Invalid input. Please check all fields.");
-
         }
     }
-    private void handleComputation(File file){
-    
-    try(BufferedReader br = new BufferedReader(new FileReader(file))) {
-    	List <Job> jobs = new ArrayList<>();
-        String line;
+
+
+    private void handleComputation(File file) {
+        try (BufferedReader br = new BufferedReader(new FileReader(file))) {
+            List<Job> jobs = new ArrayList<>();
+            String line;
+
             while ((line = br.readLine()) != null) {
                 if (line.isBlank()) continue;
 
-                
-                String[] parts = line.split("\\|");
-                if (parts.length < 5) {
-                    throw new IllegalArgumentException("Invalid line: " + line);
-                }
-                // part 1 
-                String clientID = parts[0].split(":",2)[1].trim();
-                String jobID = parts[1].trim().split(":", 2)[1].trim(); 
-                LocalDateTime arrival = LocalDateTime.parse(parts[2].trim().split(":", 2)[1].trim()); // after "Timestamp:"
-                int duration     = Integer.parseInt(parts[3].trim().split(":", 2)[1].trim()); // after "Approx job duration (min):"
-                LocalDateTime deadline = LocalDateTime.parse(parts[4].trim().split(":", 2)[1].trim()); // after "Job deadline:"
+                // Only process Client entries; skip Owner lines
+                if (!line.startsWith("Client ID:")) continue;
 
-                Job j = new Job(clientID,jobID, arrival, null, duration, deadline);
+                // Expected format (from Client.fileText()):
+                // Client ID: X | Timestamp: Y | Approx job duration (min): Z | Job deadline: W
+                String[] parts = line.split("\\|");
+                if (parts.length < 4) {
+                    throw new IllegalArgumentException("Invalid client line: " + line);
+                }
+
+                String clientID   = parts[0].split(":", 2)[1].trim();
+                // parts[1] is "Timestamp: ..." — used as arrival time
+                LocalDateTime arrival  = LocalDateTime.parse(parts[1].split(":", 2)[1].trim());
+                int duration           = Integer.parseInt(parts[2].split(":", 2)[1].trim());
+                LocalDateTime deadline = LocalDateTime.parse(parts[3].split(":", 2)[1].trim());
+
+                // Use clientID as jobID since the log has no separate job identifier
+                Job j = new Job(clientID, clientID, arrival, null, duration, deadline);
                 jobs.add(j);
             }
-        
 
-        if (jobs.isEmpty()) {
-            outputArea.setText("No jobs found.");
-            return;
-        }
-
-        // Sort by arrival time for FCFS order
-        jobs.sort(Comparator.comparing(Job::getArrivalTime));
-
-        
-        for (Job j : jobs){
-            vc.assignJob(j);
-        } 
-        LocalDateTime start = LocalDateTime.now();
-        String report = vc.completion();
-        outputArea.setText("==== Starting at" + start + "====\n" + report);
-           
-            }catch (Exception e){
-                outputArea.setText("Error: " + e.getMessage());
-                e.printStackTrace();
+            if (jobs.isEmpty()) {
+                outputArea.setText("No client jobs found in the selected file.");
+                return;
             }
-        }
-       
 
+            // Sort by arrival time for FCFS order
+            jobs.sort(Comparator.comparing(Job::getArrivalTime));
+
+            for (Job j : jobs) {
+                vc.assignJob(j);
+            }
+
+            LocalDateTime start = LocalDateTime.now();
+            String report = vc.completion();
+            outputArea.setText("==== Starting at " + start + " ====\n" + report);
+
+        } catch (Exception e) {
+            outputArea.setText("Error: " + e.getMessage());
+            e.printStackTrace();
+        }
+    }
 
     // Gianna: go back home
     private void goHome() {
