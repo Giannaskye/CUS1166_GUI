@@ -1,8 +1,10 @@
 public class VehicleCloudApp {
     public static void main(String[] args) {
-        // Javonda (EDITED): start VC Server in background thread
         new Thread(() -> VCServer.main(new String[0])).start();
 
-        new VehicleCloudFrame();
+        javax.swing.SwingUtilities.invokeLater(() -> {
+            new VehicleCloudFrame();   // owner/client window
+            new VCControllerFrame();   // separate controller window
+        });
     }
 }

@@ -3,25 +3,8 @@ import java.awt.*;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.time.format.DateTimeParseException;
-import java.util.Comparator;
-import java.util.List;
-import java.io.BufferedReader;
-import java.io.File;
-import java.io.FileReader;
-import java.util.ArrayList;
-
 
 public class VehicleCloudFrame extends JFrame {
-
-    // Javonda: VC Controller request review components
-    private JTextArea controllerRequestArea;
-    private JButton acceptButton;
-    private JButton rejectButton;
-    private Timer controllerRefreshTimer;
-
-    //vc conttroller
-    private final VCController vc = new VCController("VC-001");
-    private JTextArea outputArea;
 
     // ── Shanti: frame-level layout reference
     private CardLayout cardLayout;
@@ -30,7 +13,6 @@ public class VehicleCloudFrame extends JFrame {
     // ── Hawa: radio buttons on home screen
     private JRadioButton ownerButton;
     private JRadioButton clientButton;
-    private JRadioButton controllerButton;
     
   //--Hawa: Start Button on Home page
     private JButton startButton;
@@ -38,21 +20,23 @@ public class VehicleCloudFrame extends JFrame {
     // ── Hawa: Owner panel fields (declared at class level so listeners can read them)
     private JTextField ownerIDField;
     private JTextField vehicleIDField;
-    private JTextField vehicleModelField;
-    private JTextField vehicleMakeField;
-    private JTextField vehicleYearField;
-    private JTextField arrivalTimeField;
-    private JTextField departureTimeField;
+
+    private JComboBox<String> vehicleModelBox; //javonda
+    private JComboBox<String> vehicleYearBox;
+    private JComboBox<String> vehicleMakeBox;
+
+    private JComboBox<String> arrivalHourBox;
+    private JComboBox<String> arrivalMinuteBox;
+    private JComboBox<String> arrivalAmPmBox;
+
+    private JComboBox<String> departureHourBox;
+    private JComboBox<String> departureMinuteBox;
+    private JComboBox<String> departureAmPmBox;
 
     // ── Hawa: Client panel fields
     private JTextField clientIDField;
-    private JTextField jobDurationField;
+    private JComboBox<String> jobDurationBox;
     private JTextField jobDeadlineField;
-    
-  //-- Hawa: Controller Panel Components
-    private JButton controllerHomeButton;
-    private JButton computeCompletion;
-
 
     // ── Hawa: submit buttons (declared at class level so listeners can reference them)
     private JButton ownerSubmitButton;
@@ -64,11 +48,12 @@ public class VehicleCloudFrame extends JFrame {
     private JButton ownerClearButton;
     private JButton clientClearButton;
 
+    private java.util.Map<String, String[]> makeModelMap;
+
     public VehicleCloudFrame() {
         setupFrame();       // Shanti
         createComponents(); // Hawa
         attachListeners();  // Gianna
-        startControllerRefresh(); // Javonda
         setVisible(true);
     }
 
@@ -87,6 +72,13 @@ public class VehicleCloudFrame extends JFrame {
     // FIX: all JTextFields now stored as named instance variables so listeners can read them
     // FIX: submit/home buttons declared at class level instead of locally
     private void createComponents() {
+
+        String[] durations = new String[61];
+        durations[0] = "Select Minutes";
+        for (int i = 1; i <= 60; i++) {
+            durations[i] = String.valueOf(i);
+        }
+        jobDurationBox = new JComboBox<>(durations);
 
         // Title
         JLabel titleLabel = new JLabel("Vehicular Cloud Console", JLabel.CENTER);
@@ -155,13 +147,9 @@ welcomePanel.add(buttonWrapper, BorderLayout.SOUTH);
         clientButton = new JRadioButton("Client");
         clientButton.setBackground(new Color(255, 220, 230));
 
-        controllerButton = new JRadioButton("Controller");
-        controllerButton.setBackground(new Color(255, 220, 230));
-
         ButtonGroup group = new ButtonGroup();
         group.add(ownerButton);
         group.add(clientButton);
-        group.add(controllerButton);
 
         gbc.gridy = 1;
         gbc.gridwidth = 1;
@@ -173,60 +161,71 @@ welcomePanel.add(buttonWrapper, BorderLayout.SOUTH);
         gbc.gridx = 1;
         homePanel.add(clientButton, gbc);
 
-        gbc.gridx = 2;
-        homePanel.add(controllerButton, gbc);
-        
-        // Javonda: Controller Panel EDITED 
-        JPanel controllerPanel = new JPanel(new BorderLayout(10, 10));
-        controllerPanel.setBorder(BorderFactory.createEmptyBorder(10, 10, 10, 10));
-
-        JLabel controllerTitle = makeLabel("VC Controller Panel");
-        controllerPanel.add(controllerTitle, BorderLayout.NORTH);
-
-        // Javonda: center area showing one pending request at a time EDITED
-        controllerRequestArea = new JTextArea(10, 30);
-        controllerRequestArea.setEditable(false);
-        controllerRequestArea.setLineWrap(true);
-        controllerRequestArea.setWrapStyleWord(true);
-        controllerRequestArea.setText("No pending request.");
-        controllerPanel.add(new JScrollPane(controllerRequestArea), BorderLayout.CENTER);
-
-        // Javonda: controller action buttons EDITED
-        JPanel controllerButtons = new JPanel(new FlowLayout(FlowLayout.LEFT));
-
-        computeCompletion = new JButton("Compute Completion");
-        acceptButton = new JButton("Accept");
-        rejectButton = new JButton("Reject");
-        controllerHomeButton = new JButton("Home");
-
-        controllerButtons.add(computeCompletion);
-        controllerButtons.add(acceptButton);
-        controllerButtons.add(rejectButton);
-        controllerButtons.add(controllerHomeButton);
-
-        controllerPanel.add(controllerButtons, BorderLayout.SOUTH);
-
-        //  Javonda: optional output area for completion report EDITED
-        outputArea = new JTextArea(8, 30);
-        outputArea.setEditable(false);
-
-        // Owner Panel 
+        // Owner Panel Edited Javonda
         JPanel ownerPanel = new JPanel(new GridLayout(9, 1, 0, 5));
         ownerPanel.setBorder(BorderFactory.createEmptyBorder(10, 10, 10, 10));
 
-        ownerPanel.add(makeLabel("Owner Registration"));
+        ownerIDField = new JTextField(15);
+        vehicleIDField = new JTextField(15);
 
-        ownerPanel.add(makeRow("Owner ID:",        ownerIDField       = new JTextField(15)));
-        ownerPanel.add(makeRow("Vehicle ID:",       vehicleIDField     = new JTextField(15)));
-        ownerPanel.add(makeRow("Vehicle Model:",    vehicleModelField  = new JTextField(15)));
-        ownerPanel.add(makeRow("Vehicle Make:",     vehicleMakeField   = new JTextField(15)));
-        ownerPanel.add(makeRow("Vehicle Year:",     vehicleYearField   = new JTextField(15)));
-        ownerPanel.add(makeRow("Arrival Time(HH:MM):",     arrivalTimeField   = new JTextField(15)));
-        ownerPanel.add(makeRow("Departure Time(HH:MM):",   departureTimeField = new JTextField(15)));
+        makeModelMap = new java.util.HashMap<>();
+        makeModelMap.put("Toyota", new String[]{"Camry", "Corolla", "RAV4", "Highlander"});
+        makeModelMap.put("BMW", new String[]{"3 Series", "5 Series", "X3", "X5"});
+        makeModelMap.put("Honda", new String[]{"Civic", "Accord", "CR-V", "Pilot"});
+        makeModelMap.put("Tesla", new String[]{"Model 3", "Model S", "Model X", "Model Y"});
+        makeModelMap.put("Nissan", new String[]{"Altima", "Sentra", "Rogue", "Maxima"});
+        makeModelMap.put("Ford", new String[]{"Fusion", "Escape", "Explorer", "Mustang"});
+
+        vehicleMakeBox = new JComboBox<>(new String[]{
+            "Select Make", "Toyota", "BMW", "Honda", "Tesla", "Nissan", "Ford"
+        });
+
+        vehicleModelBox = new JComboBox<>(new String[]{
+            "Select Model"
+        });
+        vehicleModelBox.setEnabled(false);
+
+        String[] years = new String[2026 - 1995 + 2];
+        years[0] = "Select Year";
+        int index = 1;
+        for (int y = 1995; y <= 2026; y++) {
+            years[index++] = String.valueOf(y);
+        }
+        vehicleYearBox = new JComboBox<>(years);
+
+        String[] hours = {
+            "HH", "01", "02", "03", "04", "05", "06",
+            "07", "08", "09", "10", "11", "12"
+        };
+
+        String[] minutes = new String[61];
+        minutes[0] = "MM";
+        for (int i = 0; i < 60; i++) {
+            minutes[i + 1] = String.format("%02d", i);
+        }
+
+        String[] ampm = {"AM/PM", "AM", "PM"};
+
+        arrivalHourBox = new JComboBox<>(hours);
+        arrivalMinuteBox = new JComboBox<>(minutes);
+        arrivalAmPmBox = new JComboBox<>(ampm);
+
+        departureHourBox = new JComboBox<>(hours);
+        departureMinuteBox = new JComboBox<>(minutes);
+        departureAmPmBox = new JComboBox<>(ampm);
+
+        ownerPanel.add(makeLabel("Owner Registration"));
+        ownerPanel.add(makeRow("Owner ID:", ownerIDField));
+        ownerPanel.add(makeRow("Vehicle ID:", vehicleIDField));
+        ownerPanel.add(makeRow("Vehicle Make:", vehicleMakeBox));
+        ownerPanel.add(makeRow("Vehicle Model:", vehicleModelBox));
+        ownerPanel.add(makeRow("Vehicle Year:", vehicleYearBox));
+        ownerPanel.add(makeTimeRow("Arrival Time:", arrivalHourBox, arrivalMinuteBox, arrivalAmPmBox));
+        ownerPanel.add(makeTimeRow("Departure Time:", departureHourBox, departureMinuteBox, departureAmPmBox));
 
         JPanel ownerButtons = new JPanel(new FlowLayout(FlowLayout.LEFT));
         ownerSubmitButton = new JButton("Submit");
-        ownerHomeButton   = new JButton("Home");
+        ownerHomeButton = new JButton("Home");
         ownerClearButton = new JButton("Clear");
         ownerButtons.add(ownerSubmitButton);
         ownerButtons.add(ownerClearButton);
@@ -240,8 +239,8 @@ welcomePanel.add(buttonWrapper, BorderLayout.SOUTH);
         clientPanel.add(makeLabel("Client Registration"));
 
         clientPanel.add(makeRow("Client ID:",             clientIDField   = new JTextField(15)));
-        clientPanel.add(makeRow("Job Duration (min):",    jobDurationField = new JTextField(15)));
-        clientPanel.add(makeRow("Job Deadline\n(yyyy-MM-ddTHH:mm):", jobDeadlineField = new JTextField(15)));
+        clientPanel.add(makeRow("Job Duration (min):", jobDurationBox));
+        clientPanel.add(makeRow("Job Deadline (yyyy-MM-ddTHH:mm):", jobDeadlineField = new JTextField(15)));
 
         JPanel clientButtons = new JPanel(new FlowLayout(FlowLayout.LEFT));
         clientSubmitButton = new JButton("Submit");
@@ -253,10 +252,9 @@ welcomePanel.add(buttonWrapper, BorderLayout.SOUTH);
         clientButtons.add(clientHomeButton);
         clientPanel.add(clientButtons);
 
+        cards.add(welcomePanel, "Welcome");
         cards.add(homePanel,   "Home");
         cards.add(ownerPanel,  "Owner");
-        cards.add(welcomePanel, "Welcome");
-        cards.add(controllerPanel, "Controller");
         cards.add(clientPanel, "Client");
 
         add(cards, BorderLayout.CENTER);
@@ -264,16 +262,44 @@ welcomePanel.add(buttonWrapper, BorderLayout.SOUTH);
         cardLayout.show(cards, "Welcome"); // FIX: was "welcome" (lowercase), CardLayout is case-sensitive
     }
 
-    // Hawa: helper to build a labeled row
-    private JPanel makeRow(String labelText, JTextField field) {
-        JPanel row = new JPanel(new FlowLayout(FlowLayout.LEFT));
-        JLabel label = new JLabel(labelText);
-        label.setPreferredSize(new Dimension(180, 25));
-        row.add(label);
-        row.add(field);
-        return row;
-    }
+    // Hawa: helper to build a labeled row 
+private JPanel makeRow(String labelText, JTextField field) {
+    JPanel row = new JPanel(new FlowLayout(FlowLayout.LEFT));
+    JLabel label = new JLabel(labelText);
+    label.setPreferredSize(new Dimension(180, 25));
+    row.add(label);
+    row.add(field);
+    return row;
+}
+    private JPanel makeRow(String labelText, JComboBox<String> comboBox) {
+    JPanel row = new JPanel(new FlowLayout(FlowLayout.LEFT));
+    JLabel label = new JLabel(labelText);
+    label.setPreferredSize(new Dimension(180, 25));
+    comboBox.setPreferredSize(new Dimension(165, 25));
+    row.add(label);
+    row.add(comboBox);
+    return row;
 
+}
+
+private JPanel makeTimeRow(String labelText, JComboBox<String> hourBox,
+                           JComboBox<String> minuteBox, JComboBox<String> amPmBox) {
+    JPanel row = new JPanel(new FlowLayout(FlowLayout.LEFT));
+    JLabel label = new JLabel(labelText);
+    label.setPreferredSize(new Dimension(180, 25));
+
+    hourBox.setPreferredSize(new Dimension(60, 25));
+    minuteBox.setPreferredSize(new Dimension(60, 25));
+    amPmBox.setPreferredSize(new Dimension(80, 25));
+
+    row.add(label);
+    row.add(hourBox);
+    row.add(new JLabel(":"));
+    row.add(minuteBox);
+    row.add(amPmBox);
+
+    return row;
+}
     private JLabel makeLabel(String text) {
         JLabel label = new JLabel(text, JLabel.CENTER);
         label.setFont(new Font("Arial", Font.BOLD, 14));
@@ -285,10 +311,8 @@ welcomePanel.add(buttonWrapper, BorderLayout.SOUTH);
     private void attachListeners() {
         ownerButton.addActionListener(e -> cardLayout.show(cards, "Owner"));
         clientButton.addActionListener(e -> cardLayout.show(cards, "Client"));
-        controllerButton.addActionListener(e -> cardLayout.show(cards, "Controller"));
         startButton.addActionListener(e -> cardLayout.show(cards, "Home"));
         //home buttons
-        controllerHomeButton.addActionListener(e-> goHome());
         ownerHomeButton.addActionListener(e -> goHome());
         clientHomeButton.addActionListener(e -> goHome());
        //submit buttons
@@ -296,53 +320,91 @@ welcomePanel.add(buttonWrapper, BorderLayout.SOUTH);
         clientSubmitButton.addActionListener(e -> handleClientSubmit());
         //clear buttons
         ownerClearButton.addActionListener(e -> handleClear());
-        ownerClearButton.addActionListener(e -> handleClear());
         clientClearButton.addActionListener(e -> handleClear());
 
-        // Javonda: controller decision buttons
-        acceptButton.addActionListener(e -> handleControllerDecision("ACCEPTED"));
-        rejectButton.addActionListener(e -> handleControllerDecision("REJECTED"));
+         vehicleMakeBox.addActionListener(e -> {
+        String selectedMake = (String) vehicleMakeBox.getSelectedItem();
 
-        computeCompletion.addActionListener(e -> {
-            JFileChooser chooser = new JFileChooser();
-            chooser.setDialogTitle("Select the vehicular cloud log file");
-            int result = chooser.showOpenDialog(this);
-            if (result == JFileChooser.APPROVE_OPTION) {
-                handleComputation(chooser.getSelectedFile());
+        vehicleModelBox.removeAllItems();
+        vehicleModelBox.addItem("Select Model");
+
+        if (selectedMake != null && makeModelMap.containsKey(selectedMake)) {
+            for (String model : makeModelMap.get(selectedMake)) {
+                vehicleModelBox.addItem(model);
             }
-        });
+            vehicleModelBox.setEnabled(true);
+        } else {
+            vehicleModelBox.setEnabled(false);
+        }
+    });
     }
 
     // Gianna: clear all fields
+    
     private void handleClear() {
         ownerIDField.setText("");
         vehicleIDField.setText("");
-        vehicleModelField.setText("");
-        vehicleMakeField.setText("");
-        vehicleYearField.setText("");
-        arrivalTimeField.setText("");
-        departureTimeField.setText("");
+
+        vehicleMakeBox.setSelectedIndex(0);
+        vehicleModelBox.removeAllItems();
+        vehicleModelBox.addItem("Select Model");
+        vehicleModelBox.setEnabled(false);
+
+        vehicleYearBox.setSelectedIndex(0);
+
+        arrivalHourBox.setSelectedIndex(0);
+        arrivalMinuteBox.setSelectedIndex(0);
+        arrivalAmPmBox.setSelectedIndex(0);
+
+        departureHourBox.setSelectedIndex(0);
+        departureMinuteBox.setSelectedIndex(0);
+        departureAmPmBox.setSelectedIndex(0);
+
         clientIDField.setText("");
-        jobDurationField.setText("");
+        jobDurationBox.setSelectedIndex(0);
         jobDeadlineField.setText("");
     }
+    
 
     // Gianna: owner submit handler (EDITED & PATCHED BY MEHMET)
      private void handleOwnerSubmit() {
         try {
-            String ownerID       = ownerIDField.getText().trim();
-            String vehicleID     = vehicleIDField.getText().trim();
-            String vehicleModel  = vehicleModelField.getText().trim();
-            String vehicleMake   = vehicleMakeField.getText().trim();
-            int    vehicleYear   = Integer.parseInt(vehicleYearField.getText().trim());
-            String arrivalTime   = arrivalTimeField.getText().trim();
-            String departureTime = departureTimeField.getText().trim();
- 
+        String ownerID = ownerIDField.getText().trim();
+        String vehicleID = vehicleIDField.getText().trim();
+        String vehicleMake = (String) vehicleMakeBox.getSelectedItem();
+        String vehicleModel = (String) vehicleModelBox.getSelectedItem();
+        String yearText = (String) vehicleYearBox.getSelectedItem();
+
+        String arrivalHour = (String) arrivalHourBox.getSelectedItem();
+        String arrivalMinute = (String) arrivalMinuteBox.getSelectedItem();
+        String arrivalAmPm = (String) arrivalAmPmBox.getSelectedItem();
+
+        String departureHour = (String) departureHourBox.getSelectedItem();
+        String departureMinute = (String) departureMinuteBox.getSelectedItem();
+        String departureAmPm = (String) departureAmPmBox.getSelectedItem();
             if (ownerID.isEmpty() || vehicleID.isEmpty()) {
                 JOptionPane.showMessageDialog(this, "Owner ID and Vehicle ID are required.");
                 return;
             }
- 
+
+            if (vehicleMakeBox.getSelectedIndex() == 0 ||
+                vehicleModelBox.getSelectedIndex() == 0 ||
+                vehicleYearBox.getSelectedIndex() == 0 ||
+                arrivalHourBox.getSelectedIndex() == 0 ||
+                arrivalMinuteBox.getSelectedIndex() == 0 ||
+                arrivalAmPmBox.getSelectedIndex() == 0 ||
+                departureHourBox.getSelectedIndex() == 0 ||
+                departureMinuteBox.getSelectedIndex() == 0 ||
+                departureAmPmBox.getSelectedIndex() == 0) {
+                JOptionPane.showMessageDialog(this, "Please complete all dropdown selections.");
+                return;
+            }
+
+            int vehicleYear = Integer.parseInt(yearText);
+
+            String arrivalTime = arrivalHour + ":" + arrivalMinute + " " + arrivalAmPm;
+            String departureTime = departureHour + ":" + departureMinute + " " + departureAmPm;
+
             Owner owner = new Owner(ownerID, vehicleID, vehicleModel, vehicleMake,
                                     vehicleYear, arrivalTime, departureTime);
  
@@ -377,7 +439,12 @@ new Thread(() -> {
     private void handleClientSubmit() {
         try {
             String clientID          = clientIDField.getText().trim();
-            int    jobDurationMinutes = Integer.parseInt(jobDurationField.getText().trim());
+           if (jobDurationBox.getSelectedIndex() == 0) {
+    JOptionPane.showMessageDialog(this, "Please select a job duration.");
+    return;
+}
+
+        int jobDurationMinutes = Integer.parseInt((String) jobDurationBox.getSelectedItem());
             LocalDateTime jobDeadline = LocalDateTime.parse(
                 jobDeadlineField.getText().trim(),
                 DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm")
@@ -413,92 +480,16 @@ new Thread(() -> {
         } catch (Exception e) {
             JOptionPane.showMessageDialog(this, "Invalid input. Please check all fields.");
         }
-    }
-
-    private void handleComputation(File file){
-        try(BufferedReader br = new BufferedReader(new FileReader(file))) {
-            List<Job> jobs= new ArrayList<>();
-            String line;
-            while ((line = br.readLine()) != null) {
-                if (line.isBlank()) continue;
-                if (!line.startsWith("Client ID:")) continue;
-
-                String[] parts = line.split("\\|");
-                if (parts.length < 4) {
-                    throw new IllegalArgumentException("Invalid client line: " + line);
-                }
-                 
-                String clientID = parts[0].split(":",2)[1].trim();
-                LocalDateTime arrival  = LocalDateTime.parse(parts[1].split(":", 2)[1].trim());
-                int duration           = Integer.parseInt(parts[2].split(":", 2)[1].trim());
-                LocalDateTime deadline = LocalDateTime.parse(parts[3].split(":", 2)[1].trim());
-
-                Job j = new Job(clientID, clientID, arrival, null, duration, deadline);
-                jobs.add(j);
-            }
-
-            if (jobs.isEmpty()) {
-                outputArea.setText("No client jobs found in the selected file");
-                return;
-            }
-
-            jobs.sort(Comparator.comparing(Job::getArrivalTime));
-
-            for (Job j : jobs){
-                vc.assignJob(j);
-            } 
-            LocalDateTime start = LocalDateTime.now();
-            String report = vc.completion();
-
-            outputArea.setText("==== Starting at" + start + "====\n" + report);
-           
-        } catch (Exception e){
-            outputArea.setText("Error: " + e.getMessage());
-            e.printStackTrace();
-        }
-    }
+    }  
 
     // Gianna: go back home
     private void goHome() {
         handleClear();
         cardLayout.show(cards, "Home");
     }
-    // Javonda: refresh controller screen so it shows one pending request at a time
-private void startControllerRefresh() {
-    controllerRefreshTimer = new Timer(1000, e -> {
-        String pending = VCServer.getPendingRequest();
-
-        if (pending != null) {
-            controllerRequestArea.setText(pending);
-
-            // show popup only once per request
-            if (!pending.equals(VCServer.getLastDisplayedRequest())) {
-                JOptionPane.showMessageDialog(this,
-                    "New Request Received:\n\n" + pending);
-                VCServer.setLastDisplayedRequest(pending);
-            }
-        } else {
-            controllerRequestArea.setText("No pending request.");
-        }
-    });
-
-    controllerRefreshTimer.start();
 }
+    
 
-// Javonda: accept or reject the current request
-    private void handleControllerDecision(String decision) {
-        String pending = VCServer.getPendingRequest();
 
-        if (pending == null) {
-            JOptionPane.showMessageDialog(this, "There is no pending request to review.");
-            return;
-        }
 
-        VCServer.setDecision(decision);
 
-        JOptionPane.showMessageDialog(this,
-            "Request " + decision + " by VC Controller.");
-
-        controllerRequestArea.setText("No pending request.");
-    }
-}
