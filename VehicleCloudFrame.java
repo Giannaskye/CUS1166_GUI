@@ -14,7 +14,7 @@ public class VehicleCloudFrame extends JFrame {
     private JRadioButton ownerButton;
     private JRadioButton clientButton;
     
-  //--Hawa: Start Button on Home page
+    //--Hawa: Start Button on Home page
     private JButton startButton;
 
     // ── Hawa: Owner panel fields (declared at class level so listeners can read them)
@@ -108,21 +108,21 @@ public class VehicleCloudFrame extends JFrame {
     + "and system availability."
     + "</div></html>",
     JLabel.CENTER
-);
-description.setFont(new Font("Arial", Font.PLAIN, 16));
+    );
+    description.setFont(new Font("Arial", Font.PLAIN, 16));
 
-// Wrap description in a GridBagLayout panel to center it vertically and horizontally
-JPanel centerWrapper = new JPanel(new GridBagLayout());
-centerWrapper.setBackground(new Color(255, 220, 230));
-centerWrapper.add(description);
-welcomePanel.add(centerWrapper, BorderLayout.CENTER);
+        // Wrap description in a GridBagLayout panel to center it vertically and horizontally
+        JPanel centerWrapper = new JPanel(new GridBagLayout());
+        centerWrapper.setBackground(new Color(255, 220, 230));
+        centerWrapper.add(description);
+        welcomePanel.add(centerWrapper, BorderLayout.CENTER);
 
-// Start button at the bottom, centered
-startButton = new JButton("Start");
-JPanel buttonWrapper = new JPanel(new FlowLayout(FlowLayout.CENTER));
-buttonWrapper.setBackground(new Color(255, 220, 230));
-buttonWrapper.add(startButton);
-welcomePanel.add(buttonWrapper, BorderLayout.SOUTH);
+        // Start button at the bottom, centered
+        startButton = new JButton("Start");
+        JPanel buttonWrapper = new JPanel(new FlowLayout(FlowLayout.CENTER));
+        buttonWrapper.setBackground(new Color(255, 220, 230));
+        buttonWrapper.add(startButton);
+        welcomePanel.add(buttonWrapper, BorderLayout.SOUTH);
 
         
         
@@ -165,9 +165,11 @@ welcomePanel.add(buttonWrapper, BorderLayout.SOUTH);
         JPanel ownerPanel = new JPanel(new GridLayout(9, 1, 0, 5));
         ownerPanel.setBorder(BorderFactory.createEmptyBorder(10, 10, 10, 10));
 
+        // Text fields for user input
         ownerIDField = new JTextField(15);
         vehicleIDField = new JTextField(15);
 
+        // Map that connects vehicle MAKE - possible MODELS
         makeModelMap = new java.util.HashMap<>();
         makeModelMap.put("Toyota", new String[]{"Camry", "Corolla", "RAV4", "Highlander"});
         makeModelMap.put("BMW", new String[]{"3 Series", "5 Series", "X3", "X5"});
@@ -176,122 +178,159 @@ welcomePanel.add(buttonWrapper, BorderLayout.SOUTH);
         makeModelMap.put("Nissan", new String[]{"Altima", "Sentra", "Rogue", "Maxima"});
         makeModelMap.put("Ford", new String[]{"Fusion", "Escape", "Explorer", "Mustang"});
 
+        // Dropdown for selecting vehicle make (brand)
         vehicleMakeBox = new JComboBox<>(new String[]{
             "Select Make", "Toyota", "BMW", "Honda", "Tesla", "Nissan", "Ford"
         });
 
+        // Dropdown for selecting vehicle model (depends on make)
+       // Initially disabled until a make is selected
         vehicleModelBox = new JComboBox<>(new String[]{
             "Select Model"
         });
         vehicleModelBox.setEnabled(false);
 
+        // Create dropdown for vehicle years (1995 → 2026)
         String[] years = new String[2026 - 1995 + 2];
         years[0] = "Select Year";
         int index = 1;
         for (int y = 1995; y <= 2026; y++) {
             years[index++] = String.valueOf(y);
         }
+
+        // Year dropdown
         vehicleYearBox = new JComboBox<>(years);
+
+        // Time dropdowns (for arrival/departure)
+        // Hours (12-hour format)
 
         String[] hours = {
             "HH", "01", "02", "03", "04", "05", "06",
             "07", "08", "09", "10", "11", "12"
         };
 
+        // Minutes (00–59)
         String[] minutes = new String[61];
         minutes[0] = "MM";
         for (int i = 0; i < 60; i++) {
             minutes[i + 1] = String.format("%02d", i);
         }
 
+        // AM / PM selection
         String[] ampm = {"AM/PM", "AM", "PM"};
 
+        // Arrival time dropdowns
         arrivalHourBox = new JComboBox<>(hours);
         arrivalMinuteBox = new JComboBox<>(minutes);
         arrivalAmPmBox = new JComboBox<>(ampm);
 
+        // Departure time dropdowns
         departureHourBox = new JComboBox<>(hours);
         departureMinuteBox = new JComboBox<>(minutes);
         departureAmPmBox = new JComboBox<>(ampm);
 
+        // Add components to panel
         ownerPanel.add(makeLabel("Owner Registration"));
-        ownerPanel.add(makeRow("Owner ID:", ownerIDField));
-        ownerPanel.add(makeRow("Vehicle ID:", vehicleIDField));
-        ownerPanel.add(makeRow("Vehicle Make:", vehicleMakeBox));
-        ownerPanel.add(makeRow("Vehicle Model:", vehicleModelBox));
-        ownerPanel.add(makeRow("Vehicle Year:", vehicleYearBox));
+        ownerPanel.add(makeRow("Owner ID:", ownerIDField));// Owner ID input
+        ownerPanel.add(makeRow("Vehicle ID:", vehicleIDField));// Vehicle ID input
+
+        ownerPanel.add(makeRow("Vehicle Make:", vehicleMakeBox)); // Make dropdown
+        ownerPanel.add(makeRow("Vehicle Model:", vehicleModelBox)); // Model dropdown
+        ownerPanel.add(makeRow("Vehicle Year:", vehicleYearBox)); // Year dropdown
+
+        // Custom row for time input (hour + minute + AM/PM)
         ownerPanel.add(makeTimeRow("Arrival Time:", arrivalHourBox, arrivalMinuteBox, arrivalAmPmBox));
         ownerPanel.add(makeTimeRow("Departure Time:", departureHourBox, departureMinuteBox, departureAmPmBox));
 
+        // Panel for buttons (Submit, Clear, Home)
         JPanel ownerButtons = new JPanel(new FlowLayout(FlowLayout.LEFT));
-        ownerSubmitButton = new JButton("Submit");
-        ownerHomeButton = new JButton("Home");
-        ownerClearButton = new JButton("Clear");
+
+        ownerSubmitButton = new JButton("Submit"); // sends data to server
+        ownerHomeButton = new JButton("Home"); // go back to main screen
+        ownerClearButton = new JButton("Clear"); // reset fields
+
+        // Add buttons to panel
         ownerButtons.add(ownerSubmitButton);
         ownerButtons.add(ownerClearButton);
         ownerButtons.add(ownerHomeButton);
+
+        // Add button panel to main owner panel
         ownerPanel.add(ownerButtons);
 
         // Client Panel
         JPanel clientPanel = new JPanel(new GridLayout(5, 1, 0, 5));
         clientPanel.setBorder(BorderFactory.createEmptyBorder(10, 10, 10, 10));
 
+        // Add the title at the top of the client form
         clientPanel.add(makeLabel("Client Registration"));
 
+        // Add a row for Client ID input using a text field
         clientPanel.add(makeRow("Client ID:",             clientIDField   = new JTextField(15)));
+        // Add a row for Job Duration input using a combo box
         clientPanel.add(makeRow("Job Duration (min):", jobDurationBox));
+        // Add a row for Job Deadline input using a text field
         clientPanel.add(makeRow("Job Deadline (yyyy-MM-ddTHH:mm):", jobDeadlineField = new JTextField(15)));
 
+        // Panel for buttons (Submit, Clear, Home)
         JPanel clientButtons = new JPanel(new FlowLayout(FlowLayout.LEFT));
         clientSubmitButton = new JButton("Submit");
         clientHomeButton   = new JButton("Home");
         clientClearButton = new JButton ("Clear");
-        
+
+        // Add buttons to panel
         clientButtons.add(clientSubmitButton);
         clientButtons.add(clientClearButton);
         clientButtons.add(clientHomeButton);
         clientPanel.add(clientButtons);
 
+        // Add all panels to card layout
         cards.add(welcomePanel, "Welcome");
         cards.add(homePanel,   "Home");
         cards.add(ownerPanel,  "Owner");
         cards.add(clientPanel, "Client");
 
+        // Add card panel to frame
         add(cards, BorderLayout.CENTER);
         //make sure the welcome page shows first
         cardLayout.show(cards, "Welcome"); // FIX: was "welcome" (lowercase), CardLayout is case-sensitive
     }
 
     // Hawa: helper to build a labeled row 
-private JPanel makeRow(String labelText, JTextField field) {
-    JPanel row = new JPanel(new FlowLayout(FlowLayout.LEFT));
-    JLabel label = new JLabel(labelText);
+    private JPanel makeRow(String labelText, JTextField field) {
+    JPanel row = new JPanel(new FlowLayout(FlowLayout.LEFT)); 
+    JLabel label = new JLabel(labelText); // Create label with provided text
     label.setPreferredSize(new Dimension(180, 25));
+    // Set a fixed size for the text field for better alignment
     row.add(label);
     row.add(field);
     return row;
 }
+
+    // Overloaded helper to build a labeled row with a combo box instead of text field
     private JPanel makeRow(String labelText, JComboBox<String> comboBox) {
     JPanel row = new JPanel(new FlowLayout(FlowLayout.LEFT));
-    JLabel label = new JLabel(labelText);
+    JLabel label = new JLabel(labelText); // Create label with provided text
     label.setPreferredSize(new Dimension(180, 25));
     comboBox.setPreferredSize(new Dimension(165, 25));
+    // Set a fixed size for the combo box for better alignment
     row.add(label);
     row.add(comboBox);
     return row;
 
 }
-
-private JPanel makeTimeRow(String labelText, JComboBox<String> hourBox,
-                           JComboBox<String> minuteBox, JComboBox<String> amPmBox) {
-    JPanel row = new JPanel(new FlowLayout(FlowLayout.LEFT));
-    JLabel label = new JLabel(labelText);
+    // Helper to build a row for time input (hour + minute + AM/PM)
+    private JPanel makeTimeRow(String labelText, JComboBox<String> hourBox,
+                           JComboBox<String> minuteBox, JComboBox<String> amPmBox) { // FIX: added amPmBox to parameters so we can build the full time input row
+    JPanel row = new JPanel(new FlowLayout(FlowLayout.LEFT)); // Align components to the left
+    JLabel label = new JLabel(labelText); // Create label with provided text
     label.setPreferredSize(new Dimension(180, 25));
 
+    // Set fixed sizes for the time dropdowns for better alignment
     hourBox.setPreferredSize(new Dimension(60, 25));
     minuteBox.setPreferredSize(new Dimension(60, 25));
     amPmBox.setPreferredSize(new Dimension(80, 25));
 
+     // Add components to the row in order: label, hour dropdown, ":", minute dropdown, AM/PM dropdown
     row.add(label);
     row.add(hourBox);
     row.add(new JLabel(":"));
@@ -299,7 +338,9 @@ private JPanel makeTimeRow(String labelText, JComboBox<String> hourBox,
     row.add(amPmBox);
 
     return row;
-}
+    }
+
+    // Helper to create styled section labels (like form titles)
     private JLabel makeLabel(String text) {
         JLabel label = new JLabel(text, JLabel.CENTER);
         label.setFont(new Font("Arial", Font.BOLD, 14));
@@ -345,21 +386,22 @@ private JPanel makeTimeRow(String labelText, JComboBox<String> hourBox,
         ownerIDField.setText("");
         vehicleIDField.setText("");
 
+        // Reset make/model/year dropdowns
         vehicleMakeBox.setSelectedIndex(0);
         vehicleModelBox.removeAllItems();
         vehicleModelBox.addItem("Select Model");
         vehicleModelBox.setEnabled(false);
-
+        // Reset year dropdown
         vehicleYearBox.setSelectedIndex(0);
-
+        // Reset time dropdowns
         arrivalHourBox.setSelectedIndex(0);
         arrivalMinuteBox.setSelectedIndex(0);
         arrivalAmPmBox.setSelectedIndex(0);
-
+        // Reset departure time dropdowns
         departureHourBox.setSelectedIndex(0);
         departureMinuteBox.setSelectedIndex(0);
         departureAmPmBox.setSelectedIndex(0);
-
+        // Reset client fields
         clientIDField.setText("");
         jobDurationBox.setSelectedIndex(0);
         jobDeadlineField.setText("");
@@ -369,16 +411,17 @@ private JPanel makeTimeRow(String labelText, JComboBox<String> hourBox,
     // Gianna: owner submit handler (EDITED & PATCHED BY MEHMET)
      private void handleOwnerSubmit() {
         try {
+        // Read all input values from the form
         String ownerID = ownerIDField.getText().trim();
         String vehicleID = vehicleIDField.getText().trim();
         String vehicleMake = (String) vehicleMakeBox.getSelectedItem();
         String vehicleModel = (String) vehicleModelBox.getSelectedItem();
         String yearText = (String) vehicleYearBox.getSelectedItem();
-
+        // Arrival time inputs
         String arrivalHour = (String) arrivalHourBox.getSelectedItem();
         String arrivalMinute = (String) arrivalMinuteBox.getSelectedItem();
         String arrivalAmPm = (String) arrivalAmPmBox.getSelectedItem();
-
+        // Departure time inputs
         String departureHour = (String) departureHourBox.getSelectedItem();
         String departureMinute = (String) departureMinuteBox.getSelectedItem();
         String departureAmPm = (String) departureAmPmBox.getSelectedItem();
@@ -386,7 +429,7 @@ private JPanel makeTimeRow(String labelText, JComboBox<String> hourBox,
                 JOptionPane.showMessageDialog(this, "Owner ID and Vehicle ID are required.");
                 return;
             }
-
+            // Check that all dropdowns have a valid selection (not the default index 0)
             if (vehicleMakeBox.getSelectedIndex() == 0 ||
                 vehicleModelBox.getSelectedIndex() == 0 ||
                 vehicleYearBox.getSelectedIndex() == 0 ||
@@ -399,38 +442,53 @@ private JPanel makeTimeRow(String labelText, JComboBox<String> hourBox,
                 JOptionPane.showMessageDialog(this, "Please complete all dropdown selections.");
                 return;
             }
-
+            // Validate that year is a number
             int vehicleYear = Integer.parseInt(yearText);
 
+            // Convert arrival and departure times to a consistent format (e.g. "HH:mm AM/PM")
             String arrivalTime = arrivalHour + ":" + arrivalMinute + " " + arrivalAmPm;
             String departureTime = departureHour + ":" + departureMinute + " " + departureAmPm;
 
+            // Create Owner object with the collected data
             Owner owner = new Owner(ownerID, vehicleID, vehicleModel, vehicleMake,
                                     vehicleYear, arrivalTime, departureTime);
  
             // Send to VC Controller server and receive decision  ← SOCKET PATH
             // (mirrors handleClientSubmit — server now owns the file write)
-           // Javonda (EDITED): run owner request in background so GUI does not freeze
-new Thread(() -> {
-    String result = owner.sendVehicleInfo("localhost", 5050);
 
-    SwingUtilities.invokeLater(() -> {
+
+        // Javonda (EDITED): run owner request in background so GUI does not freeze
+        // Create a new thread so the GUI does not freeze while sending data to server
+        new Thread(() -> {
+
+        // Send vehicle/owner info to server (localhost, port 5050)
+        // Server will respond with "ACCEPTED", "REJECTED", or error
+        String result = owner.sendVehicleInfo("localhost", 5050);
+
+        // Switch back to Swing UI thread to safely update the interface
+        SwingUtilities.invokeLater(() -> {
+
+        // If server accepted the vehicle registration
         if ("ACCEPTED".equals(result)) {
             JOptionPane.showMessageDialog(this,
                 "Vehicle Registered Successfully!\nOwner ID: " + ownerID +
                 "\nData saved to vehicular_cloud_log.txt");
+
+         // If server rejected the registration (e.g. due to pending request or invalid data)
         } else if ("REJECTED".equals(result)) {
             JOptionPane.showMessageDialog(this,
                 "Registration Rejected by VC Controller.\nData was NOT saved.");
+        // If something went wrong (connection issue, null response, etc.)
         } else {
             JOptionPane.showMessageDialog(this, "Server Communication Error.");
         }
-    });
-}).start();
+     });
+        }).start(); // Start the thread so everything runs without freezing the GUI
 
+    //the Owner class's sendVehicleInfo method- handles the socket communication, including connecting to the server, sending the data, and returning the server's response as a string.
         } catch (NumberFormatException e) {
             JOptionPane.showMessageDialog(this, "Vehicle year must be a valid number.");
-        } catch (Exception e) {
+        } catch (Exception e) { // catch any other unexpected exceptions to prevent crashes and show a user-friendly message
             JOptionPane.showMessageDialog(this, "Invalid input. Please check all fields.");
         }
      }
@@ -442,7 +500,7 @@ new Thread(() -> {
            if (jobDurationBox.getSelectedIndex() == 0) {
     JOptionPane.showMessageDialog(this, "Please select a job duration.");
     return;
-}
+    }
 
         int jobDurationMinutes = Integer.parseInt((String) jobDurationBox.getSelectedItem());
             LocalDateTime jobDeadline = LocalDateTime.parse(
@@ -457,28 +515,37 @@ new Thread(() -> {
 
             Client client = new Client(clientID, jobDurationMinutes, jobDeadline);
 
-            // milestone 5 - redirected data to socket in Client class by calling jobrequest, returns message based on response from server 
-          // Javonda (EDITED): run client request in background so GUI does not freeze
-new Thread(() -> {
-    String result = client.jobRequest("localhost", 5050);
+        // milestone 5 - redirected data to socket in Client class by calling jobrequest, returns message based on response from server 
+        // Javonda (EDITED): run client request in background so GUI does not freeze
+        new Thread(() -> {
+            String result = client.jobRequest("localhost", 5050);
 
-    SwingUtilities.invokeLater(() -> {
+        // Switch back to the Swing UI thread (IMPORTANT for updating GUI safely)
+            SwingUtilities.invokeLater(() -> {
+
+        // If server accepted the job
         if ("ACCEPTED".equals(result)) {
             JOptionPane.showMessageDialog(this, "Job Accepted by Server");
+
+         // If server rejected the job
         } else if ("REJECTED".equals(result)) {
             JOptionPane.showMessageDialog(this, "Job Rejected by Server");
-        } else {
-            JOptionPane.showMessageDialog(this, "Server Communication Error");
-        }
-    });
-}).start();
 
-        } catch (NumberFormatException e) {
+        // If something went wrong (no response or error)
+        } else {
+            JOptionPane.showMessageDialog(this, "Server Communication Error"); // FIX: added message for null/invalid response from server to improve user feedback in case of connection issues or server errors
+        }
+            });
+        }).start();// Start the thread actually runs the code inside it 
+
+        } catch (NumberFormatException e) {// catch invalid number format for job duration
             JOptionPane.showMessageDialog(this, "Job duration must be a valid number.");
-        } catch (DateTimeParseException e) {
+
+        } catch (DateTimeParseException e) { // catch invalid date format for job deadline
             JOptionPane.showMessageDialog(this, "Deadline must be in format: yyyy-MM-ddTHH:mm");
-        } catch (Exception e) {
-            JOptionPane.showMessageDialog(this, "Invalid input. Please check all fields.");
+
+        } catch (Exception e) { // catch any other unexpected exceptions to prevent crashes and show a user-friendly message
+            JOptionPane.showMessageDialog(this, "Invalid input. Please check all fields."); // FIX: added generic catch for any other exceptions to improve robustness and user feedback in case of unforeseen errors
         }
     }  
 
