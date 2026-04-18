@@ -2,8 +2,10 @@ import java.io.DataInputStream;
 import java.io.DataOutputStream;
 import java.net.ServerSocket;
 import java.net.Socket;
+import java.time.LocalDateTime;
 
 public class VCServer {
+    private static DatabaseConnection db = new DatabaseConnection();
 
     private static final int PORT = 5050;
 
@@ -11,6 +13,7 @@ public class VCServer {
     private static String pendingRequest = null;
     private static String decision = null;
     private static String lastDisplayedRequest = null;
+
 
     public static synchronized void setPendingRequest(String request) {
         pendingRequest = request;
@@ -82,7 +85,9 @@ public class VCServer {
          DataOutputStream dos = new DataOutputStream(socket.getOutputStream())) {
 
         // 1. Read the incoming data string sent by Owner or Client
+        //gianna edit - parse data to initalize later
         String data = dis.readUTF();
+        String [] parts = data.split("|");
         System.out.println("\n--- Incoming Request ---");
         System.out.println(data);
 
@@ -111,12 +116,47 @@ public class VCServer {
         }
 
         String decision = VCServer.getDecision();
+// gianna initalize variable from parsed data to add to database 
+          
+     String requestId = parts[0];
+     String userId = parts[1];
+     String userType = parts[2];
 
-        // 4. If accepted, persist to file (server owns the file — clients no longer
+     String vehicleID = parts[3];
+     String vehicleMake = parts[4];
+     String vehicleModel = parts[5];
+
+     int vehicleYear = Integer.parseInt(parts[6]);
+
+     String arrivalTime = parts[7];
+     String departureTime = parts[8];
+
+     Integer jobDuration = Integer.parseInt(parts[9]);
+
+     LocalDateTime jobDeadline = LocalDateTime.parse(parts[10]);
+
+     LocalDateTime timestamp = LocalDateTime.now();
+       // 4. If accepted, persist to file (server owns the file — clients no longer
         //    call FileManager directly)
+         
         if ("ACCEPTED".equals(decision)) {
             FileManager.saveRaw(data);   // see FileManager addition below
-            System.out.println("Decision: ACCEPTED — data saved to log.");
+            // gianna - if accepted send to database & file for completion time
+            db.insertUser(userId,userType);
+            db.insertRequest(
+            requestId,
+            userId,
+            timestamp,
+            vehicleID,
+            vehicleMake,
+            vehicleModel,
+            vehicleYear,
+            arrivalTime,
+            departureTime,
+            jobDuration,
+            jobDeadline);
+
+            System.out.println("Decision: ACCEPTED — data saved to log & database.");
         } else {
             System.out.println("Decision: REJECTED — data NOT saved.");
         }
